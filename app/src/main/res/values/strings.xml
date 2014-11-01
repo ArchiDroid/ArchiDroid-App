@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ ========================================================================
+  ~     _             _     _ ____            _     _
+  ~    / \   _ __ ___| |__ (_)  _ \ _ __ ___ (_) __| |
+  ~   / _ \ | '__/ __| '_ \| | | | | '__/ _ \| |/ _` |
+  ~  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
+  ~ /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
+  ~
+  ~ Copyright 2014 Łukasz "JustArchi" Domeradzki
+  ~ Contact: JustArchi@JustArchi.net
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE=2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~ ========================================================================
+  -->
+
+<resources>
+
+    <string name="app_name">ArchiDroid</string>
+	<string name="titleHelp">HELP</string>
+	<string name="titleDonate">DONATE</string>
+    <string name="titleMain">MAIN</string>
+    <string name="titleUpdate">UPDATE</string>
+    <string name="titleBackend">BACKEND</string>
+	<string name="titleLinux">LINUX</string>
+    <string name="action_settings">Settings</string>
+
+	<string name="buttonFetch">Fetch</string>
+	<string name="buttonRefresh">Refresh</string>
+	<string name="buttonRefreshProcesses">Refresh Processes</string>
+	<string name="buttonLoad">Load</string>
+	<string name="buttonDownload">Download</string>
+	<string name="buttonCancel">Cancel</string>
+
+	<string name="buttonInstall">Install</string>
+	<string name="buttonUninstall">Uninstall</string>
+	<string name="buttonMount">Mount</string>
+	<string name="buttonUnmount">Unmount</string>
+	<string name="buttonLaunchShell">Launch Shell</string>
+
+	<string name="checkBoxInstalled">Installed</string>
+	<string name="checkBoxMounted">Mounted</string>
+
+	<string name="stringFetchFirst">You must fetch first!</string>
+	<string name="stringModeDirect">Direct (recommended)</string>
+	<string name="stringModeGit">Git (OTA, experts only)</string>
+
+	<string name="textWelcome">Welcome to ArchiDroid App!</string>
+	<string name="textWIP">Please notice that this app is still in work-in-progress state. You can report bugs (or FCs) in ArchiDroid thread with proper logcat log.</string>
+	<string name="textRemote">Remote</string>
+	<string name="textCurrent">Current</string>
+	<string name="textVersion">Version:</string>
+	<string name="textBuildDate">Build Date:</string>
+	<string name="textVersionType">Variant:</string>
+	<string name="textRom">Base:</string>
+	<string name="textDevice">Device:</string>
+
+</resources>
