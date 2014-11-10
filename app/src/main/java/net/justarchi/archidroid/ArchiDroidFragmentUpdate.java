@@ -142,7 +142,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		spinnerBranches.setAdapter(spinnerBranchesAdapter);
 		spinnerBranches.setEnabled(false);
 
-		spinnerDownloadModes = (Spinner) getView().findViewById(R.id.imageViewDonate);
+		spinnerDownloadModes = (Spinner) getView().findViewById(R.id.spinnerDownloadModes);
 		final ArrayList<String> spinnerDownloadModesArray = new ArrayList<>();
 		spinnerDownloadModesArray.add(getString(R.string.stringModeDirect));
 		spinnerDownloadModesArray.add(getString(R.string.stringModeGit));

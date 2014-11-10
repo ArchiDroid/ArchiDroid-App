@@ -47,7 +47,7 @@
 	<Spinner
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:id="@+id/imageViewDonate"
+		android:id="@+id/spinnerDownloadModes"
 		android:layout_toStartOf="@+id/space"
 		android:layout_alignParentStart="true"
 		android:layout_alignTop="@+id/buttonDownload"
@@ -204,7 +204,7 @@
 		android:id="@+id/textRemote"
 		android:layout_toStartOf="@+id/textCurrent"
 		android:layout_marginTop="25dp"
-		android:layout_below="@+id/imageViewDonate"
+		android:layout_below="@+id/spinnerDownloadModes"
 		android:layout_alignParentStart="true"/>
 
 	<Spinner
