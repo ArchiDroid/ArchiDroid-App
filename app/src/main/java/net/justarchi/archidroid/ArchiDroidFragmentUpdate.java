@@ -329,54 +329,33 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 				rbc = Channels.newChannel(new URL(arg[0]).openStream());
 				final Scanner scanner = new Scanner(rbc);
 
-				int allFields = 7;
+				int missingFields = 7;
 				String currentLine;
-				while (scanner.hasNextLine()) {
+				while (missingFields > 0 && scanner.hasNextLine()) {
 					currentLine = scanner.nextLine();
 					//ArchiDroidUtilities.log(currentLine);
 
 					if (currentLine.startsWith("ro.archidroid.device=")) {
 						roArchiDroidDeviceRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					} else if (currentLine.startsWith("ro.archidroid.rom=")) {
 						roArchiDroidRomRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					} else if (currentLine.startsWith("ro.archidroid.rom.short=")) {
 						roArchiDroidRomShortRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					} else if (currentLine.startsWith("ro.archidroid.version=")) {
 						roArchiDroidVersionRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					} else if (currentLine.startsWith("ro.archidroid.version.type=")) {
 						roArchiDroidVersionTypeRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					} else if (currentLine.startsWith("ro.build.date=")) {
 						roBuildDateRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					} else if (currentLine.startsWith("ro.build.date.utc=")) {
 						roBuildDateUTCRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-						allFields--;
-						if (allFields <= 0) {
-							break;
-						}
+						missingFields--;
 					}
 				}
 				return true;
