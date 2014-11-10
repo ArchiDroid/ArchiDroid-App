@@ -99,7 +99,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 	private String roArchiDroidVersionRemote = null;
 	private String roArchiDroidVersionTypeRemote = null;
 	private String roBuildDateRemote = null;
-    private String roBuildDateUTCRemote = null;
+	private String roBuildDateUTCRemote = null;
 
 	public ArchiDroidFragmentUpdate() {
 	}
@@ -372,12 +372,12 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 							break;
 						}
 					} else if (currentLine.startsWith("ro.build.date.utc=")) {
-                        roBuildDateUTCRemote = currentLine.substring(currentLine.indexOf('=') + 1);
-                        allFields--;
-                        if (allFields <= 0) {
-                            break;
-                        }
-                    }
+						roBuildDateUTCRemote = currentLine.substring(currentLine.indexOf('=') + 1);
+						allFields--;
+						if (allFields <= 0) {
+							break;
+						}
+					}
 				}
 				return true;
 			} catch (Exception e) {
