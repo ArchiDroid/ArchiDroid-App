@@ -92,7 +92,7 @@ public final class ArchiDroidUtilities {
 	private static String roArchiDroidVersion = null;
 	private static String roArchiDroidVersionType = null;
 	private static String roBuildDate = null;
-    private static String roBuildDateUTC = null;
+	private static String roBuildDateUTC = null;
 
 	private static ArrayList<BackendSwitch> backendSwitches;
 	private static ArrayList<BackendSpinner> backendSpinners;
@@ -114,7 +114,7 @@ public final class ArchiDroidUtilities {
 		roArchiDroidVersion = getProperty("ro.archidroid.version");
 		roArchiDroidVersionType = getProperty("ro.archidroid.version.type");
 		roBuildDate = getProperty("ro.build.date");
-        roBuildDateUTC = getProperty("ro.build.date.utc");
+		roBuildDateUTC = getProperty("ro.build.date.utc");
 
 		refreshRoot();
 		refreshConnection(context);
@@ -357,9 +357,9 @@ public final class ArchiDroidUtilities {
 		return roBuildDate;
 	}
 
-    protected static final String getBuildDateUTC() {
-        return roBuildDateUTC;
-    }
+	protected static final String getBuildDateUTC() {
+		return roBuildDateUTC;
+	}
 
 	protected static final String getArchiDroidRom() {
 		return roArchiDroidRom;
