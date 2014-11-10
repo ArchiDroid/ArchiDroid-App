@@ -99,6 +99,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 	private String roArchiDroidVersionRemote = null;
 	private String roArchiDroidVersionTypeRemote = null;
 	private String roBuildDateRemote = null;
+    private String roBuildDateUTCRemote = null;
 
 	public ArchiDroidFragmentUpdate() {
 	}
@@ -328,11 +329,11 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 				rbc = Channels.newChannel(new URL(arg[0]).openStream());
 				final Scanner scanner = new Scanner(rbc);
 
-				int allFields = 6;
+				int allFields = 7;
 				String currentLine;
 				while (scanner.hasNextLine()) {
 					currentLine = scanner.nextLine();
-					ArchiDroidUtilities.log(currentLine);
+					//ArchiDroidUtilities.log(currentLine);
 
 					if (currentLine.startsWith("ro.archidroid.device=")) {
 						roArchiDroidDeviceRemote = currentLine.substring(currentLine.indexOf('=') + 1);
@@ -370,7 +371,13 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 						if (allFields <= 0) {
 							break;
 						}
-					}
+					} else if (currentLine.startsWith("ro.build.date.utc=")) {
+                        roBuildDateUTCRemote = currentLine.substring(currentLine.indexOf('=') + 1);
+                        allFields--;
+                        if (allFields <= 0) {
+                            break;
+                        }
+                    }
 				}
 				return true;
 			} catch (Exception e) {
@@ -404,7 +411,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			textRemoteBuildDate.setText(getString(R.string.textBuildDate) + " " + roBuildDateRemote);
 			textRemoteBuildDate.setTextColor(Color.GREEN);
 			if (!ArchiDroidUtilities.getBuildDate().equals("")) {
-				if (ArchiDroidUtilities.versionBiggerThan(roBuildDateRemote, ArchiDroidUtilities.getBuildDate())) {
+				if (ArchiDroidUtilities.versionBiggerThan(roBuildDateUTCRemote, ArchiDroidUtilities.getBuildDateUTC())) {
 					textCurrentBuildDate.setTextColor(Color.RED);
 				} else {
 					textCurrentBuildDate.setTextColor(Color.GREEN);
@@ -679,7 +686,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			preFinalFile.renameTo(finalFile);
 
 			DialogOK dialog = new DialogOK();
-			dialog.setArgs("Success!", "It looks like everything ended successfully! You can find your flashable zip in " + pathToOutputZip);
+			dialog.setArgs("Success!", "It looks like everything ended successfully! You can find your flashable zip in " + finalFile.getPath());
 			if (isActive) {
 				dialog.show(getFragmentManager(), null);
 			} else {
