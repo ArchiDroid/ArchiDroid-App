@@ -206,7 +206,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 						if (ArchiDroidUtilities.getArchiDroidLinuxMounted()) {
 							new downloadFileGit(v.getContext(), spinnerBranches.getSelectedItem().toString()).execute();
 						} else {
-							mWakeLock.release();
 							final DialogOK dialog = new DialogOK();
 							dialog.setArgs("WARNING", "Git mode couldn't be used because ArchiDroid's Linux has not been mounted yet. Check out the help to get more info.");
 							if (isActive) {
@@ -214,6 +213,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 							} else {
 								dialogList.add(dialog);
 							}
+							mWakeLock.release();
 						}
 					}
 					break;
@@ -527,9 +527,9 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			if (result) {
 				ArchiDroidUtilities.showLongToast(context, "Success!");
 			} else {
-				mWakeLock.release();
 				ArchiDroidUtilities.deleteRecursive(new File(ArchiDroidUtilities.getUpdateTargetTempFile()));
 				ArchiDroidUtilities.showLongToast(context, "Failed!");
+				mWakeLock.release();
 				return;
 			}
 			new parseZipFile(getActivity(), ArchiDroidUtilities.getUpdateTargetTempFile(), ArchiDroidUtilities.getUpdateTargetTempRepackedFile()).execute();
@@ -643,7 +643,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		@Override
 		protected final void onPostExecute(final Boolean result) {
 			super.onPostExecute(result);
-			mWakeLock.release();
 			progressDialog.dismiss();
 
 			final File preFinalFile = new File(pathToOutputZip);
@@ -654,6 +653,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				ArchiDroidUtilities.deleteRecursive(preFinalFile);
 				ArchiDroidUtilities.showLongToast(context, "Failed!");
+				mWakeLock.release();
 				return;
 			}
 
@@ -669,6 +669,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				dialogList.add(dialog);
 			}
+			mWakeLock.release();
 		}
 	}
 
@@ -840,7 +841,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		@Override
 		protected final void onPostExecute(final Boolean result) {
 			super.onPostExecute(result);
-			mWakeLock.release();
 			progressDialog.dismiss();
 
 			final DialogOK dialog = new DialogOK();
@@ -854,6 +854,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				dialogList.add(dialog);
 			}
+			mWakeLock.release();
 
 		}
 	}
