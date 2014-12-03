@@ -64,8 +64,8 @@ public final class ArchiDroidFragmentHelp extends Fragment {
 			@Override
 			public final boolean shouldOverrideUrlLoading(final WebView view, final String urlNewString) {
 				//if (urlNewString.equals(ArchiDroidUtilities.getGithubWiki())) {
-					running++;
-					webViewHelp.loadUrl(urlNewString);
+				running++;
+				webViewHelp.loadUrl(urlNewString);
 				//}
 				return true;
 			}
@@ -77,7 +77,7 @@ public final class ArchiDroidFragmentHelp extends Fragment {
 
 			@Override
 			public final void onPageFinished(final WebView view, final String url) {
-				if(--running == 0) {
+				if (--running == 0) {
 					if (progressDialog != null && progressDialog.isShowing()) {
 						progressDialog.hide();
 					}

@@ -95,7 +95,7 @@ public final class BackendSwitch extends Switch {
 		private final boolean state;
 		private ProgressDialog progressDialog;
 
-		private applyBackendChange(final Context context, final File file, final boolean state){
+		private applyBackendChange(final Context context, final File file, final boolean state) {
 			this.context = context;
 			this.file = file;
 			this.state = state;

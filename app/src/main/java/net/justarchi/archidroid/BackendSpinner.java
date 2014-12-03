@@ -85,7 +85,7 @@ public final class BackendSpinner extends Spinner {
 		private final File source;
 		private ProgressDialog progressDialog;
 
-		private applyBackendChangeSpinner(final Context context, final String target, final File source){
+		private applyBackendChangeSpinner(final Context context, final String target, final File source) {
 			this.context = context;
 			this.target = target;
 			this.source = source;

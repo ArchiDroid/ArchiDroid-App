@@ -144,12 +144,12 @@ public final class ArchiDroidFragmentBackend extends Fragment {
 					if (child.isDirectory()) {
 						int position = -1;
 						int finalPosition = -1;
-						final ArrayList<String> spinnerArray =  new ArrayList<>();
+						final ArrayList<String> spinnerArray = new ArrayList<>();
 						for (final File f : child.listFiles()) {
 							position++;
 							final String fName = f.getName();
 							spinnerArray.add(fName);
-							if (finalPosition == - 1 && fName.equals(target)) {
+							if (finalPosition == -1 && fName.equals(target)) {
 								finalPosition = position;
 							}
 						}

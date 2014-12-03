@@ -35,19 +35,13 @@ public final class NetworkReceiver extends BroadcastReceiver {
 
 	private static boolean isConnected = false;
 
-	@Override
-	public final void onReceive(final Context context, final Intent intent) {
-		refreshConnection(context);
-		notifyUser(context);
-	}
-
 	public final static boolean isConnectedNow(final Context context) {
 		refreshConnection(context);
 		return isConnected;
 	}
 
 	public final static void refreshConnection(final Context context) {
-		final ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 		isConnected = activeNetwork != null && activeNetwork.isConnected();
 	}
@@ -58,5 +52,11 @@ public final class NetworkReceiver extends BroadcastReceiver {
 		} else {
 			ArchiDroidUtilities.disconnected(context);
 		}
+	}
+
+	@Override
+	public final void onReceive(final Context context, final Intent intent) {
+		refreshConnection(context);
+		notifyUser(context);
 	}
 }

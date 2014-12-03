@@ -56,27 +56,21 @@ public final class ArchiDroidUtilities {
 	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
 	private static final String internalSdCard = "/storage/sdcard0";
+	private static final String ArchiDroidInternalDir = internalSdCard + "/ArchiDroid";
 	private static final String externalSdCard = "/storage/sdcard1";
-
+	private static final String ArchiDroidExternalDir = externalSdCard + "/ArchiDroid";
 	private static final boolean archiLogEnabled = true;
-
-	private static boolean isActive = false;
-	private static boolean isArchiDroid = false;
-	private static boolean isRooted = false;
-
 	private static final String githubRepo = "ArchiDroid/ArchiDroid";
 	private static final String githubBraches = "https://api.github.com/repos/" + githubRepo + "/branches";
 	private static final String githubWiki = "https://github.com/" + githubRepo + "/wiki/Application";
 	private static final String linkDonation = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WYXLLCQ9EA28L&item_name=ArchiDroid&item_number=ArchiDroidApplication";
-
-	private static final String ArchiDroidInternalDir = internalSdCard + "/ArchiDroid";
-	private static final String ArchiDroidExternalDir = externalSdCard + "/ArchiDroid";
 	private static final String ArchiDroidRootDir = "/data/media/0/ArchiDroid";
-
+	private static String ArchiDroidLinux = ArchiDroidRootDir + "/debian";
+	private static boolean isActive = false;
+	private static boolean isArchiDroid = false;
+	private static boolean isRooted = false;
 	// These may change in future
 	private static String ArchiDroidDir = Environment.getExternalStorageDirectory() + "/ArchiDroid";
-	private static String ArchiDroidLinux = ArchiDroidRootDir + "/debian";
-
 	private static String ArchiDroidTempDir = ArchiDroidDir + "/tmp";
 	private static String updateTargetTempFile = ArchiDroidTempDir + "/ArchiDroid-GitHub.zip";
 	private static String updateTargetTempRepackedFile = ArchiDroidTempDir + "/ArchiDroid.zip";
@@ -242,7 +236,7 @@ public final class ArchiDroidUtilities {
 	}
 
 	protected static final List<String> rootExecuteWait(final String command) {
-		return rootExecuteWait(new String[] {command});
+		return rootExecuteWait(new String[]{command});
 	}
 
 	protected static final String rootExecuteWithOutput(final String[] commands) {
@@ -255,7 +249,7 @@ public final class ArchiDroidUtilities {
 	}
 
 	protected static final String rootExecuteWithOutput(final String command) {
-		return rootExecuteWithOutput(new String[] {command});
+		return rootExecuteWithOutput(new String[]{command});
 	}
 
 	protected static final String rootExecuteWithOutputOneLine(final String[] commands) {
@@ -415,7 +409,7 @@ public final class ArchiDroidUtilities {
 		BufferedReader input = null;
 		try {
 			input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			return(input.readLine()) != null;
+			return (input.readLine()) != null;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -446,13 +440,13 @@ public final class ArchiDroidUtilities {
 		isActive = false;
 	}
 
-	protected static final void connected (final Context context) {
+	protected static final void connected(final Context context) {
 		if (isActive) {
 			ArchiDroidUtilities.showShortToast(context, "Connected!");
 		}
 	}
 
-	protected static final void disconnected (final Context context) {
+	protected static final void disconnected(final Context context) {
 		if (isActive) {
 			ArchiDroidUtilities.showShortToast(context, "Lost connection!");
 		}
@@ -509,7 +503,7 @@ public final class ArchiDroidUtilities {
 		try {
 			Class androidOS = Class.forName("android.os.SystemProperties");
 			Method method = androidOS.getDeclaredMethod("get", String.class);
-			getprop = (String)method.invoke(null, property);
+			getprop = (String) method.invoke(null, property);
 			return getprop;
 		} catch (Exception e) {
 			e.printStackTrace();

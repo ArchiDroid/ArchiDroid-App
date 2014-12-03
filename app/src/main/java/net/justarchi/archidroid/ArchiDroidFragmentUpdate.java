@@ -66,10 +66,8 @@ import java.util.zip.ZipOutputStream;
 
 public final class ArchiDroidFragmentUpdate extends Fragment {
 
+	private final ArrayList<DialogFragment> dialogList = new ArrayList<>();
 	private boolean isActive = true;
-
-	private final ArrayList<DialogFragment> dialogList=new ArrayList<>();
-
 	private PowerManager.WakeLock mWakeLock;
 
 	private Button buttonUpdate;
@@ -709,7 +707,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 
 		@Override
 		protected final Boolean doInBackground(final Void... params) {
-			final String targetDir = ArchiDroidUtilities.getArchiDroidInternalDir() +  "/GitHub/" + ArchiDroidGithubBranch;
+			final String targetDir = ArchiDroidUtilities.getArchiDroidInternalDir() + "/GitHub/" + ArchiDroidGithubBranch;
 			final String commandLinux = "ARCHIDROID_LINUX " + ArchiDroidUtilities.getArchiDroidLinux() + " --command ";
 			final String commandClone = commandLinux + "\"git clone https://github.com/" + ArchiDroidUtilities.getGithubRepo() + " --depth 1 --progress --branch " + ArchiDroidGithubBranch + " " + targetDir + "\"";
 			final String commandSync = commandLinux + "\"cd " + targetDir + " && git pull --progress origin " + ArchiDroidGithubBranch + "\"";
@@ -759,6 +757,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 
 			return errorCode == 0;
 		}
+
 		@Override
 		protected final void onProgressUpdate(final String... values) {
 			try {
@@ -789,10 +788,8 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		private final Context context;
 		private final String ArchiDroidGithubBranch;
 		private final String outputFile;
-
-		private ProgressDialog progressDialog;
 		private final String progressString = "Creating zip...";
-
+		private ProgressDialog progressDialog;
 		private Process mProcess;
 
 		public zipGitDirectory(final Context context, final String ArchiDroidGithubBranch, final String outputFile) {
@@ -809,7 +806,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 
 		@Override
 		protected final Boolean doInBackground(final Void... params) {
-			final String targetDir = ArchiDroidUtilities.getArchiDroidInternalDir() +  "/GitHub/" + ArchiDroidGithubBranch;
+			final String targetDir = ArchiDroidUtilities.getArchiDroidInternalDir() + "/GitHub/" + ArchiDroidGithubBranch;
 			final String commandLinux = "ARCHIDROID_LINUX " + ArchiDroidUtilities.getArchiDroidLinux() + " --command ";
 			final String commandZip = commandLinux + "\"cd " + targetDir + " && 7za a -bd -y -tzip -mx1 -xr\\!.git -xr\\!__build " + outputFile + " . >/dev/null 2>&1\"";
 			ArchiDroidUtilities.log(commandZip);

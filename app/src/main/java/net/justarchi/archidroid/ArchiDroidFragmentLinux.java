@@ -43,15 +43,13 @@ import java.util.ArrayList;
 
 public final class ArchiDroidFragmentLinux extends Fragment {
 
-	private boolean isActive = true;
-	private final ArrayList<DialogFragment> dialogList=new ArrayList<>();
-
+	private final ArrayList<DialogFragment> dialogList = new ArrayList<>();
 	private final String commandInstall = "ARCHIDROID_LINUX --install";
 	private final String commandUninstall = "ARCHIDROID_LINUX --uninstall";
 	private final String commandMount = "ARCHIDROID_LINUX --mount";
 	private final String commandUnmount = "ARCHIDROID_LINUX --unmount";
 	private final String commandLaunchShell = "ARCHIDROID_LINUX --shell";
-
+	private boolean isActive = true;
 	private Button buttonInstall;
 	private Button buttonUninstall;
 	private Button buttonMount;
