@@ -294,10 +294,10 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 				spinnerDownloadModes.setEnabled(true);
 			}
 
-			progressDialog.dismiss();
 			if (!ArchiDroidUtilities.getArchiDroidDevice().equals("") && !ArchiDroidUtilities.getArchiDroidRomShort().equals("") && !ArchiDroidUtilities.getArchiDroidVersionType().equals("")) {
-				spinnerBranches.setSelection(branchesAdapter.getPosition(ArchiDroidUtilities.getArchiDroidDevice() + "-" + ArchiDroidUtilities.getArchiDroidRomShort() + "-" + ArchiDroidUtilities.getArchiDroidVersionType()));
+				spinnerBranches.setSelection(branchesAdapter.getPosition(ArchiDroidUtilities.getArchiDroidDevice().toLowerCase() + "-" + ArchiDroidUtilities.getArchiDroidRomShort().toLowerCase() + "-" + ArchiDroidUtilities.getArchiDroidVersionType().toLowerCase()));
 			}
+			progressDialog.dismiss();
 		}
 	}
 
