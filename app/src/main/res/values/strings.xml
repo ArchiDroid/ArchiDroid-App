@@ -54,6 +54,9 @@
 	<string name="stringFetchFirst">You must fetch first!</string>
 	<string name="stringModeDirect">Direct (recommended)</string>
 	<string name="stringModeGit">Git (OTA, experts only)</string>
+	<string name="stringUpdateService">ArchiDroid Update Service</string>
+	<string name="stringUpdateServiceNewAvailable">New ArchiDroid version is available!</string>
+	<string name="stringUpdateServiceInProgress">Update in progress…</string>
 
 	<string name="textWelcome">Welcome to ArchiDroid App!</string>
 	<string name="textWIP">Please notice that this app is still in work-in-progress state. You can report bugs (or FCs) in ArchiDroid thread with proper logcat log.</string>

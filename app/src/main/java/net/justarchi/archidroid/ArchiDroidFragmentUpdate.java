@@ -29,10 +29,10 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +68,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 
 	private final ArrayList<DialogFragment> dialogList = new ArrayList<>();
 	private boolean isActive = true;
-	private PowerManager.WakeLock mWakeLock;
 
 	private Button buttonUpdate;
 	private Button buttonDownload;
@@ -100,6 +99,13 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 	private String roBuildDateUTCRemote = null;
 
 	public ArchiDroidFragmentUpdate() {
+	}
+
+	@Override
+	public final void onDestroy() {
+		final Context context = getActivity();
+		stopArchiDroidUpdateForegroundService(context);
+		super.onDestroy();
 	}
 
 	@Override
@@ -176,35 +182,29 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 
 		@Override
 		public final void onClick(final View v) {
+			final Context context = v.getContext();
+
 			switch (v.getId()) {
 				case R.id.buttonUpdate:
-					if (!ArchiDroidUtilities.isConnected(v.getContext())) {
-						ArchiDroidUtilities.showShortToast(v.getContext(), "No connection available!");
+					if (!ArchiDroidUtilities.isConnected(context)) {
+						ArchiDroidUtilities.showShortToast(context, "No connection available!");
 						break;
 					}
-					new loadBranches(v.getContext()).execute();
+					new loadBranches(context).execute();
 					break;
 				case R.id.buttonDownload:
-					if (!ArchiDroidUtilities.isConnected(v.getContext())) {
-						ArchiDroidUtilities.showShortToast(v.getContext(), "No connection available!");
+					if (!ArchiDroidUtilities.isConnected(context)) {
+						ArchiDroidUtilities.showShortToast(context, "No connection available!");
 						break;
 					}
 
-					// Make sure there are no zombie wakelocks
-					if (mWakeLock != null && mWakeLock.isHeld()) {
-						mWakeLock.release();
-					}
-
-					// Keep CPU online while we download and parse zip
-					final PowerManager pm = (PowerManager) v.getContext().getSystemService(Context.POWER_SERVICE);
-					mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "StayAwake");
-					mWakeLock.acquire();
+					startArchiDroidUpdateForegroundService(context);
 
 					if (spinnerDownloadModes.getSelectedItem().toString().equals(getString(R.string.stringModeDirect))) {
-						new downloadFileDirect(v.getContext()).execute("https://github.com/" + ArchiDroidUtilities.getGithubRepo() + "/archive/" + spinnerBranches.getSelectedItem().toString() + ".zip");
+						new downloadFileDirect(context).execute("https://github.com/" + ArchiDroidUtilities.getGithubRepo() + "/archive/" + spinnerBranches.getSelectedItem().toString() + ".zip");
 					} else if (spinnerDownloadModes.getSelectedItem().toString().equals(getString(R.string.stringModeGit))) {
 						if (ArchiDroidUtilities.getArchiDroidLinuxMounted()) {
-							new downloadFileGit(v.getContext(), spinnerBranches.getSelectedItem().toString()).execute();
+							new downloadFileGit(context, spinnerBranches.getSelectedItem().toString()).execute();
 						} else {
 							final DialogOK dialog = new DialogOK();
 							dialog.setArgs("WARNING", "Git mode couldn't be used because ArchiDroid's Linux has not been mounted yet. Check out the help to get more info.");
@@ -213,7 +213,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 							} else {
 								dialogList.add(dialog);
 							}
-							mWakeLock.release();
+							stopArchiDroidUpdateForegroundService(context);
 						}
 					}
 					break;
@@ -224,13 +224,14 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 	public final class CustomOnItemSelectedListener implements Spinner.OnItemSelectedListener {
 		@Override
 		public final void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
+			final Context context = view.getContext();
 			switch (parent.getId()) {
 				case R.id.spinnerBranches:
-					if (!ArchiDroidUtilities.isConnected(view.getContext())) {
-						ArchiDroidUtilities.showShortToast(view.getContext(), "No connection available!");
+					if (!ArchiDroidUtilities.isConnected(context)) {
+						ArchiDroidUtilities.showShortToast(context, "No connection available!");
 						break;
 					}
-					new parseRemoteBuildProp(view.getContext()).execute("https://github.com/" + ArchiDroidUtilities.getGithubRepo() + "/raw/" + spinnerBranches.getSelectedItem().toString() + "/system/build.prop");
+					new parseRemoteBuildProp(context).execute("https://github.com/" + ArchiDroidUtilities.getGithubRepo() + "/raw/" + spinnerBranches.getSelectedItem().toString() + "/system/build.prop");
 					break;
 			}
 		}
@@ -239,6 +240,14 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		public final void onNothingSelected(final AdapterView<?> parent) {
 
 		}
+	}
+
+	private final void startArchiDroidUpdateForegroundService(final Context context) {
+		context.startService(new Intent(context, ArchiDroidUpdateForegroundService.class));
+	}
+
+	private final void stopArchiDroidUpdateForegroundService(final Context context) {
+		context.stopService(new Intent(context, ArchiDroidUpdateForegroundService.class));
 	}
 
 	private final class loadBranches extends AsyncTask<String, Void, ArrayList<String>> {
@@ -294,8 +303,9 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 				spinnerDownloadModes.setEnabled(true);
 			}
 
-			if (!ArchiDroidUtilities.getArchiDroidDevice().equals("") && !ArchiDroidUtilities.getArchiDroidRomShort().equals("") && !ArchiDroidUtilities.getArchiDroidVersionType().equals("")) {
-				spinnerBranches.setSelection(branchesAdapter.getPosition(ArchiDroidUtilities.getArchiDroidDevice().toLowerCase() + "-" + ArchiDroidUtilities.getArchiDroidRomShort().toLowerCase() + "-" + ArchiDroidUtilities.getArchiDroidVersionType().toLowerCase()));
+			final String currentBranch = ArchiDroidUtilities.getCurrentBranch();
+			if (!currentBranch.equals("")) {
+				spinnerBranches.setSelection(branchesAdapter.getPosition(currentBranch));
 			}
 			progressDialog.dismiss();
 		}
@@ -323,7 +333,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 
 			ReadableByteChannel rbc = null;
 			try {
-				new URL(arg[0]).openStream();
 				rbc = Channels.newChannel(new URL(arg[0]).openStream());
 				final Scanner scanner = new Scanner(rbc);
 
@@ -375,54 +384,70 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		protected final void onPostExecute(final Boolean result) {
 			super.onPostExecute(result);
 
+			// Version
 			textRemoteVersion.setText(getString(R.string.textVersion) + " " + roArchiDroidVersionRemote);
-			textRemoteVersion.setTextColor(Color.GREEN);
 			if (!ArchiDroidUtilities.getArchiDroidVersion().equals("")) {
-				if (ArchiDroidUtilities.versionBiggerThan(roArchiDroidVersionRemote, ArchiDroidUtilities.getArchiDroidVersion())) {
+				int mCompare = ArchiDroidUtilities.compareVersions(roArchiDroidVersionRemote, ArchiDroidUtilities.getArchiDroidVersion());
+				if (mCompare == 1) {
+					textRemoteVersion.setTextColor(Color.GREEN);
 					textCurrentVersion.setTextColor(Color.RED);
-				} else {
+				} else if (mCompare == 0) {
+					textRemoteVersion.setTextColor(Color.GREEN);
+					textCurrentVersion.setTextColor(Color.GREEN);
+				} else if (mCompare == -1) {
+					textRemoteVersion.setTextColor(Color.RED);
 					textCurrentVersion.setTextColor(Color.GREEN);
 				}
 			}
 
 			textRemoteBuildDate.setText(getString(R.string.textBuildDate) + " " + roBuildDateRemote);
-			textRemoteBuildDate.setTextColor(Color.GREEN);
 			if (!ArchiDroidUtilities.getBuildDate().equals("")) {
-				if (ArchiDroidUtilities.versionBiggerThan(roBuildDateUTCRemote, ArchiDroidUtilities.getBuildDateUTC())) {
+				int mCompare = ArchiDroidUtilities.compareVersions(roBuildDateUTCRemote, ArchiDroidUtilities.getBuildDateUTC());
+				if (mCompare == 1) {
+					textRemoteBuildDate.setTextColor(Color.GREEN);
 					textCurrentBuildDate.setTextColor(Color.RED);
-				} else {
+				} else if (mCompare == 0) {
+					textRemoteBuildDate.setTextColor(Color.GREEN);
+					textCurrentBuildDate.setTextColor(Color.GREEN);
+				} else if (mCompare == -1) {
+					textRemoteBuildDate.setTextColor(Color.RED);
 					textCurrentBuildDate.setTextColor(Color.GREEN);
 				}
 			}
 
 			textRemoteVersionType.setText(getString(R.string.textVersionType) + " " + roArchiDroidVersionTypeRemote);
-			textRemoteVersionType.setTextColor(Color.GREEN);
 			if (!ArchiDroidUtilities.getArchiDroidVersionType().equals("")) {
-				if (!roArchiDroidVersionTypeRemote.equals(ArchiDroidUtilities.getArchiDroidVersionType())) {
+				int mCompare = ArchiDroidUtilities.compareVersionTypes(roArchiDroidVersionTypeRemote, ArchiDroidUtilities.getArchiDroidVersionType());
+				if (mCompare == 1) {
+					textRemoteVersionType.setTextColor(Color.GREEN);
 					textCurrentVersionType.setTextColor(Color.RED);
-				} else {
+				} else if (mCompare == 0) {
+					textRemoteVersionType.setTextColor(Color.GREEN);
+					textCurrentVersionType.setTextColor(Color.GREEN);
+				} else if (mCompare == -1) {
+					textRemoteVersionType.setTextColor(Color.RED);
 					textCurrentVersionType.setTextColor(Color.GREEN);
 				}
 			}
 
 			textRemoteRom.setText(getString(R.string.textRom) + " " + roArchiDroidRomRemote);
-			textRemoteRom.setTextColor(Color.GREEN);
 			if (!ArchiDroidUtilities.getArchiDroidRom().equals("")) {
 				if (!roArchiDroidRomRemote.equals(ArchiDroidUtilities.getArchiDroidRom())) {
-					textCurrentRom.setTextColor(Color.RED);
+					textRemoteRom.setTextColor(Color.RED);
 				} else {
-					textCurrentRom.setTextColor(Color.GREEN);
+					textRemoteRom.setTextColor(Color.GREEN);
 				}
+				textCurrentRom.setTextColor(Color.GREEN);
 			}
 
 			textRemoteDevice.setText(getString(R.string.textDevice) + " " + roArchiDroidDeviceRemote);
-			textRemoteDevice.setTextColor(Color.GREEN);
 			if (!ArchiDroidUtilities.getArchiDroidDevice().equals("")) {
 				if (!roArchiDroidDeviceRemote.equals(ArchiDroidUtilities.getArchiDroidDevice())) {
-					textCurrentDevice.setTextColor(Color.RED);
+					textRemoteDevice.setTextColor(Color.RED);
 				} else {
-					textCurrentDevice.setTextColor(Color.GREEN);
+					textRemoteDevice.setTextColor(Color.GREEN);
 				}
+				textCurrentDevice.setTextColor(Color.GREEN);
 			}
 
 			buttonDownload.setEnabled(true);
@@ -529,7 +554,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				ArchiDroidUtilities.deleteRecursive(new File(ArchiDroidUtilities.getUpdateTargetTempFile()));
 				ArchiDroidUtilities.showLongToast(context, "Failed!");
-				mWakeLock.release();
+				stopArchiDroidUpdateForegroundService(context);
 				return;
 			}
 			new parseZipFile(getActivity(), ArchiDroidUtilities.getUpdateTargetTempFile(), ArchiDroidUtilities.getUpdateTargetTempRepackedFile()).execute();
@@ -653,7 +678,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				ArchiDroidUtilities.deleteRecursive(preFinalFile);
 				ArchiDroidUtilities.showLongToast(context, "Failed!");
-				mWakeLock.release();
+				stopArchiDroidUpdateForegroundService(context);
 				return;
 			}
 
@@ -669,7 +694,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				dialogList.add(dialog);
 			}
-			mWakeLock.release();
+			stopArchiDroidUpdateForegroundService(context);
 		}
 	}
 
@@ -854,7 +879,7 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			} else {
 				dialogList.add(dialog);
 			}
-			mWakeLock.release();
+			stopArchiDroidUpdateForegroundService(context);
 
 		}
 	}

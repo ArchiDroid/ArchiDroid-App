@@ -25,9 +25,13 @@
 
 package net.justarchi.archidroid;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,8 +49,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import eu.chainfire.libsuperuser.Debug;
 import eu.chainfire.libsuperuser.Shell;
@@ -100,21 +108,26 @@ public final class ArchiDroidUtilities {
 
 		Debug.setDebug(false);
 
-		roArchiDroid = getProperty("ro.archidroid");
-		isArchiDroid = roArchiDroid != null && roArchiDroid.equals("1");
-		roArchiDroidDevice = getProperty("ro.archidroid.device");
-		roArchiDroidRom = getProperty("ro.archidroid.rom");
-		roArchiDroidRomShort = getProperty("ro.archidroid.rom.short");
-		roArchiDroidVersion = getProperty("ro.archidroid.version");
-		roArchiDroidVersionType = getProperty("ro.archidroid.version.type");
-		roBuildDate = getProperty("ro.build.date");
-		roBuildDateUTC = getProperty("ro.build.date.utc");
-
+		readProperties();
 		refreshRoot();
 		refreshConnection(context);
 
 		if (isRooted) {
 			refreshArchiDroidLinux();
+		}
+	}
+
+	protected static final void readProperties() {
+		if (roArchiDroid == null) {
+			roArchiDroid = getProperty("ro.archidroid");
+			isArchiDroid = roArchiDroid != null && roArchiDroid.equals("1");
+			roArchiDroidDevice = getProperty("ro.archidroid.device");
+			roArchiDroidRom = getProperty("ro.archidroid.rom");
+			roArchiDroidRomShort = getProperty("ro.archidroid.rom.short");
+			roArchiDroidVersion = getProperty("ro.archidroid.version");
+			roArchiDroidVersionType = getProperty("ro.archidroid.version.type");
+			roBuildDate = getProperty("ro.build.date");
+			roBuildDateUTC = getProperty("ro.build.date.utc");
 		}
 	}
 
@@ -191,6 +204,63 @@ public final class ArchiDroidUtilities {
 	protected static final void refreshBackendProcessCheckBoxes() {
 		for (final BackendProcessCheckBox pcb : backendProcessCheckBoxes) {
 			pcb.refresh();
+		}
+	}
+
+	protected static final String getCurrentBranch() {
+		if (!roArchiDroidDevice.equals("") && !roArchiDroidRomShort.equals("") && !roArchiDroidVersionType.equals("")) {
+			return roArchiDroidDevice.toLowerCase() + "-" + roArchiDroidRomShort.toLowerCase() + "-" + roArchiDroidVersionType.toLowerCase();
+		} else {
+			return "";
+		}
+	}
+
+	protected static final boolean isNewArchiDroidAvailable() {
+		readProperties(); // Because this function may be called before first run
+		final String currentBranch = getCurrentBranch();
+		if (currentBranch.equals("")) {
+			return false;
+		}
+
+		ReadableByteChannel rbc = null;
+		try {
+			rbc = Channels.newChannel(new URL("https://github.com/" + ArchiDroidUtilities.getGithubRepo() + "/raw/" + currentBranch + "/system/build.prop").openStream());
+			final Scanner scanner = new Scanner(rbc);
+
+			String roArchiDroidVersionRemote = "";
+			String roBuildDateUTCRemote = "";
+
+			int missingFields = 2;
+			String currentLine;
+			while (missingFields > 0 && scanner.hasNextLine()) {
+				currentLine = scanner.nextLine();
+				//ArchiDroidUtilities.log(currentLine);
+
+				if (currentLine.startsWith("ro.archidroid.version=")) {
+					roArchiDroidVersionRemote = currentLine.substring(currentLine.indexOf('=') + 1);
+					missingFields--;
+				} else if (currentLine.startsWith("ro.build.date.utc=")) {
+					roBuildDateUTCRemote = currentLine.substring(currentLine.indexOf('=') + 1);
+					missingFields--;
+				}
+			}
+			log("VersionCheck: " + roArchiDroidVersionRemote + " " + roArchiDroidVersion + " | " + roBuildDateUTCRemote + " " + roBuildDateUTC);
+			if (compareVersions(roArchiDroidVersionRemote, roArchiDroidVersion) == 1 || compareVersions(roBuildDateUTCRemote, roBuildDateUTC) == 1) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (rbc != null) {
+				try {
+					rbc.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -296,6 +366,26 @@ public final class ArchiDroidUtilities {
 		rootExecuteWait("ARCHIDROID_INIT RELOAD " + service.toUpperCase());
 	}
 
+	protected static final void showNotification(final Context context, final String title, final String message) {
+		int uniqueNumber = 1; // TODO
+		NotificationManager mNotificationManager = (NotificationManager)
+				context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+				new Intent(context, Main.class), 0);
+
+		NotificationCompat.Builder mBuilder =
+				new NotificationCompat.Builder(context)
+						.setSmallIcon(R.drawable.ic_launcher)
+						.setContentTitle(title)
+						.setStyle(new NotificationCompat.BigTextStyle()
+								.bigText(message))
+						.setContentText(message);
+
+		mBuilder.setContentIntent(contentIntent);
+		mNotificationManager.notify(uniqueNumber, mBuilder.build());
+	}
+
 	protected static final String readFileOneLine(final File file) {
 		BufferedReader bufferedReader = null;
 		try {
@@ -381,21 +471,71 @@ public final class ArchiDroidUtilities {
 		}
 	}
 
-	protected static final boolean versionBiggerThan(final String bigger, final String smaller) {
-		for (int i = 0; i < bigger.length(); i++) {
-			if (i == smaller.length()) {
-				// Bigger is longer e.g. 3.0[a] vs. 3.0[ ]
-				return true;
-			} else if (Character.getNumericValue(bigger.charAt(i)) > Character.getNumericValue(smaller.charAt(i))) {
-				//  Bigger char is in fact bigger than smaller, e.g. 2.[2] vs. 2.[1]
-				return true;
-			} else if (Character.getNumericValue(bigger.charAt(i)) < Character.getNumericValue(smaller.charAt(i))) {
-				// Smaller is in fact bigger than bigger, e.g. 2.[1] vs. 2.[2]
-				return false;
+	/**
+	* Compares two version-like strings, e.g. 3.0a 3.1.1b
+	*
+	* @param bigger The version which should be bigger
+	* @param smaller The version which should be smaller
+	* @return 1 if bigger > smaller, -1 if smaller > bigger, 0 otherwise (equal)
+	*/
+	protected static final int compareVersions(final String bigger, final String smaller) {
+		int biggerLength = bigger.length();
+		int smallerLength = smaller.length();
+		for (int i = 0; i < biggerLength; i++) {
+			if (i >= smallerLength) { // Bigger is longer e.g. 3.0[a] vs. 3.0[ ]
+				//log(bigger + " wins with " + smaller);
+				return 1;
+			} else {
+				int biggerChar = Character.getNumericValue(bigger.charAt(i));
+				int smallerChar = Character.getNumericValue(smaller.charAt(i));
+				if (biggerChar > smallerChar) { //  Bigger char is in fact bigger than smaller, e.g. 2.[2].0 vs. 2.[1].1
+					//log(bigger + " wins with " + smaller);
+					return 1;
+				} else if (smallerChar > biggerChar) { // Smaller is in fact bigger than bigger, e.g. 2.[1].1 vs. 2.[2].0
+					//log(smaller + " wins with " + bigger);
+					return -1;
+				}
 			}
 		}
-		// They're equal, e.g. 3.[0] vs. 3.[0] or smaller is longer, e.g. 3.[0] vs 3.[0]a
-		return false;
+		if (biggerLength == smallerLength) { // They're absolutely equal
+			//log(bigger + " draws with " + smaller);
+			return 0;
+		} else if (smallerLength > biggerLength) { // Smaller is longer e.g. 3.0[ ] vs. 3.0[a]
+			//log(smaller + " wins with " + bigger);
+			return -1;
+		} else { // Should never happen
+			error("compareVersions(): Unhandled scenario: " + bigger + " " + smaller);
+			return 0;
+		}
+	}
+
+	/**
+	 * Compares two versionType-like strings, e.g. STABLE and EXPERIMENTAL
+	 *
+	 * @param remote The version which is available on the remote server
+	 * @param current The version which we have right now
+	 * @return 1 if remote > current (stable vs. exp), -1 if current > remote (exp vs. stable), 0 otherwise (equal)
+	 */
+	protected static final int compareVersionTypes(final String remote, final String current) {
+		if (current.equalsIgnoreCase("STABLE")) {
+			if (remote.equalsIgnoreCase("EXPERIMENTAL")) {
+				return -1;
+			} else if (remote.equalsIgnoreCase("STABLE")) {
+				return 0;
+			} else { // Should never happen, unknown version type?
+				return -1;
+			}
+		} else if (current.equalsIgnoreCase("EXPERIMENTAL")) {
+			if (remote.equalsIgnoreCase("STABLE")) {
+				return 1;
+			} else if (remote.equalsIgnoreCase("EXPERIMENTAL")) {
+				return 0;
+			} else { // Should never happen, unknown version type?
+				return -1;
+			}
+		} else { // Should never happen, unknown version type?
+			return -1;
+		}
 	}
 
 	protected static final boolean processIsRunning(final String process) {
@@ -438,18 +578,6 @@ public final class ArchiDroidUtilities {
 
 	protected static final void onPause() {
 		isActive = false;
-	}
-
-	protected static final void connected(final Context context) {
-		if (isActive) {
-			ArchiDroidUtilities.showShortToast(context, "Connected!");
-		}
-	}
-
-	protected static final void disconnected(final Context context) {
-		if (isActive) {
-			ArchiDroidUtilities.showShortToast(context, "Lost connection!");
-		}
 	}
 
 	protected static final String getGithubBranches() {
@@ -499,12 +627,10 @@ public final class ArchiDroidUtilities {
 	}
 
 	protected static final String getProperty(final String property) {
-		final String getprop;
 		try {
-			Class androidOS = Class.forName("android.os.SystemProperties");
-			Method method = androidOS.getDeclaredMethod("get", String.class);
-			getprop = (String) method.invoke(null, property);
-			return getprop;
+			final Class androidOS = Class.forName("android.os.SystemProperties");
+			final Method method = androidOS.getDeclaredMethod("get", String.class);
+			return (String) method.invoke(null, property);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

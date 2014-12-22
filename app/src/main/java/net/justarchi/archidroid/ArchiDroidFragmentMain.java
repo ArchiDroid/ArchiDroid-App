@@ -31,7 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ArchiDroidFragmentMain extends Fragment {
+public final class ArchiDroidFragmentMain extends Fragment {
 
 
 	public ArchiDroidFragmentMain() {
