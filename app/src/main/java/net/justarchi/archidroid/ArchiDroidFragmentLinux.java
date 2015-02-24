@@ -382,22 +382,8 @@ public final class ArchiDroidFragmentLinux extends Fragment {
 		protected final Void doInBackground(final Void... args) {
 			final Intent i = new Intent("jackpal.androidterm.RUN_SCRIPT");
 			i.addCategory(Intent.CATEGORY_DEFAULT);
-			i.putExtra("jackpal.androidterm.iInitialCommand", "su -c " + "\"" + commandLaunchShell + " " + linuxPath + "\"");
-
-			//TODO: Remove workaround for https://github.com/jackpal/Android-Terminal-Emulator/issues/353
-			ArchiDroidUtilities.rootSysRW();
-			ArchiDroidUtilities.rootRenameFile("/system/xbin/resize", "/system/xbin/resize.old");
-
+			i.putExtra("jackpal.androidterm.iInitialCommand", "su -c \"" + commandLaunchShell + " " + linuxPath + "\"");
 			startActivity(i);
-
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			ArchiDroidUtilities.rootRenameFile("/system/xbin/resize.old", "/system/xbin/resize");
-			ArchiDroidUtilities.rootSysRO();
-
 			return null;
 		}
 
