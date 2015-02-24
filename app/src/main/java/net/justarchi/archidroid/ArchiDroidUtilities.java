@@ -6,7 +6,7 @@
  *  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
  * /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
  *
- * Copyright 2014 Łukasz "JustArchi" Domeradzki
+ * Copyright 2015 Łukasz "JustArchi" Domeradzki
  * Contact: JustArchi@JustArchi.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,10 +44,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -72,8 +79,11 @@ public final class ArchiDroidUtilities {
 	private static final String githubBraches = "https://api.github.com/repos/" + githubRepo + "/branches";
 	private static final String githubWiki = "https://github.com/" + githubRepo + "/wiki/Application";
 	private static final String linkDonation = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WYXLLCQ9EA28L&item_name=ArchiDroid&item_number=ArchiDroidApplication";
-	private static final String ArchiDroidRootDir = "/data/media/0/ArchiDroid";
-	private static String ArchiDroidLinux = ArchiDroidRootDir + "/debian";
+	private static final String ArchiDroidDataDir = "/data/media/0/ArchiDroid";
+    private static final String ArchiDroidSystemDir = "/system/archidroid";
+    private static final String ArchiDroidTmpfsDir = ArchiDroidSystemDir + "/tmpfs";
+    private static final String ArchiDroidEventsPipe = ArchiDroidTmpfsDir + "/EVENTS";
+	private static String ArchiDroidLinux = ArchiDroidDataDir + "/debian";
 	private static boolean isActive = false;
 	private static boolean isArchiDroid = false;
 	private static boolean isRooted = false;
@@ -100,11 +110,11 @@ public final class ArchiDroidUtilities {
 	private static ArrayList<BackendSpinner> backendSpinners;
 	private static ArrayList<BackendProcessCheckBox> backendProcessCheckBoxes;
 
-	private static void archiTests() {
-	}
+	//private static void archiTests() {
+	//}
 
 	protected static final void initUtilities(final Context context) {
-		archiTests();
+		//archiTests();
 
 		Debug.setDebug(false);
 
@@ -146,6 +156,10 @@ public final class ArchiDroidUtilities {
 	protected static final String getArchiDroidLinux() {
 		return ArchiDroidLinux;
 	}
+
+    protected static final String getArchiDroidTmpfsDir() {
+        return ArchiDroidTmpfsDir;
+    }
 
 	protected static final void refreshArchiDroidLinux() {
 		if (rootIsLinuxInstalled()) {
@@ -306,12 +320,13 @@ public final class ArchiDroidUtilities {
 	}
 
 	protected static final List<String> rootExecuteWait(final String command) {
+        //log("rootExecuteWait: " + command);
 		return rootExecuteWait(new String[]{command});
 	}
 
 	protected static final String rootExecuteWithOutput(final String[] commands) {
 		final StringBuilder sb = new StringBuilder();
-		for (String s : Shell.SU.run(commands)) {
+		for (final String s : Shell.SU.run(commands)) {
 			sb.append(s);
 			sb.append("\t");
 		}
@@ -367,7 +382,7 @@ public final class ArchiDroidUtilities {
 	}
 
 	protected static final void showNotification(final Context context, final String title, final String message) {
-		int uniqueNumber = 1; // TODO
+		final int uniqueNumber = 1337; // TODO
 		NotificationManager mNotificationManager = (NotificationManager)
 				context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -376,7 +391,7 @@ public final class ArchiDroidUtilities {
 
 		NotificationCompat.Builder mBuilder =
 				new NotificationCompat.Builder(context)
-						.setSmallIcon(R.drawable.ic_launcher)
+						.setSmallIcon(R.mipmap.ic_launcher)
 						.setContentTitle(title)
 						.setStyle(new NotificationCompat.BigTextStyle()
 								.bigText(message))
@@ -428,6 +443,34 @@ public final class ArchiDroidUtilities {
 		}
 		return sb.toString();
 	}
+
+    protected static final void writePipe(final File file, final String message) {
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.write(message);
+            writer.newLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected static final void sendEvent(final String event) {
+        final File EventsPipe = new File(ArchiDroidEventsPipe);
+        if (EventsPipe.exists()) {
+            writePipe(EventsPipe, event);
+        } else {
+            error("sendEvent: Tried to send " + event + ", but events pipe " + ArchiDroidEventsPipe + " doesn't exist!");
+        }
+    }
 
 	protected static final String readFile(final String path) {
 		return readFile(new File(path));

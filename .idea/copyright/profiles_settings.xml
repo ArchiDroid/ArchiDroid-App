@@ -1,7 +1,3 @@
 <component name="CopyrightManager">
-  <settings default="ArchiDroid">
-    <module2copyright>
-      <element module="All" copyright="ArchiDroid" />
-    </module2copyright>
-  </settings>
+  <settings default="ArchiDroid" />
 </component>

@@ -6,7 +6,7 @@
  *  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
  * /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
  *
- * Copyright 2014 Łukasz "JustArchi" Domeradzki
+ * Copyright 2015 Łukasz "JustArchi" Domeradzki
  * Contact: JustArchi@JustArchi.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +75,7 @@ public final class ArchiDroidUpdateForegroundService extends Service {
 				//.setContentIntent(pendingIntent)
 				.setContentTitle(getString(R.string.stringUpdateService))
 				.setContentText(getString(R.string.stringUpdateServiceInProgress))
-				.setSmallIcon(R.drawable.ic_launcher)
+				.setSmallIcon(R.mipmap.ic_launcher)
 				.build();
 		startForeground(1337, note);
 	}

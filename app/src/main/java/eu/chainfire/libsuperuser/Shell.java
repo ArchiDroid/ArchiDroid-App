@@ -6,7 +6,7 @@
  *  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
  * /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
  *
- * Copyright 2014 Łukasz "JustArchi" Domeradzki
+ * Copyright 2015 Łukasz "JustArchi" Domeradzki
  * Contact: JustArchi@JustArchi.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,6 @@
 
 package eu.chainfire.libsuperuser;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +40,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import android.os.Handler;
+import android.os.Looper;
 
 import eu.chainfire.libsuperuser.StreamGobbler.OnLineListener;
 
@@ -125,7 +125,7 @@ public class Shell {
         try {
             // Combine passed environment with system environment
             if (environment != null) {
-                Map<String, String> newEnvironment = new HashMap<>();
+                Map<String, String> newEnvironment = new HashMap<String, String>();
                 newEnvironment.putAll(System.getenv());
                 int split;
                 for (String entry : environment) {
@@ -153,18 +153,25 @@ public class Shell {
             // start gobbling and write our commands to the shell
             STDOUT.start();
             STDERR.start();
-            for (String write : commands) {
-                Debug.logCommand(String.format("[%s+] %s", shellUpper, write));
-                STDIN.write((write + "\n").getBytes("UTF-8"));
-                STDIN.flush();
-            }
             try {
+                for (String write : commands) {
+                    Debug.logCommand(String.format("[%s+] %s", shellUpper, write));
+                    STDIN.write((write + "\n").getBytes("UTF-8"));
+                    STDIN.flush();
+                }
                 STDIN.write("exit\n".getBytes("UTF-8"));
                 STDIN.flush();
             } catch (IOException e) {
-                // happens if the script already contains the exit line - if
-                // there were a more serious issue, it would already have thrown
-                // an exception while writing the script to STDIN
+                if (e.getMessage().contains("EPIPE")) {
+                    // method most horrid to catch broken pipe, in which case we
+                    // do nothing. the command is not a shell, the shell closed
+                    // STDIN, the script already contained the exit command, etc.
+                    // these cases we want the output instead of returning null
+                } else {
+                    // other issues we don't know how to handle, leads to
+                    // returning null
+                    throw e;
+                }
             }
 
             // wait for our process to finish, while we gobble away in the
@@ -362,7 +369,7 @@ public class Shell {
 
                 List<String> ret = Shell.run(
                         internal ? "su -V" : "su -v",
-                        new String[] {},
+                        new String[] { "exit" },
                         null,
                         false
                         );
@@ -620,8 +627,8 @@ public class Shell {
         private boolean autoHandler = true;
         private String shell = "sh";
         private boolean wantSTDERR = false;
-        private List<Command> commands = new LinkedList<>();
-        private Map<String, String> environment = new HashMap<>();
+        private List<Command> commands = new LinkedList<Command>();
+        private Map<String, String> environment = new HashMap<String, String>();
         private OnLineListener onSTDOUTLineListener = null;
         private OnLineListener onSTDERRLineListener = null;
         private int watchdogTimeout = 0;
@@ -1476,7 +1483,7 @@ public class Shell {
                 if (environment.size() == 0) {
                     process = Runtime.getRuntime().exec(shell);
                 } else {
-                    Map<String, String> newEnvironment = new HashMap<>();
+                    Map<String, String> newEnvironment = new HashMap<String, String>();
                     newEnvironment.putAll(System.getenv());
                     newEnvironment.putAll(environment);
                     int i = 0;
@@ -1578,8 +1585,17 @@ public class Shell {
                 waitForIdle();
 
             try {
-                STDIN.write(("exit\n").getBytes("UTF-8"));
-                STDIN.flush();
+                try {
+                    STDIN.write(("exit\n").getBytes("UTF-8"));
+                    STDIN.flush();
+                } catch (IOException e) {
+                    if (e.getMessage().contains("EPIPE")) {
+                        // we're not running a shell, the shell closed STDIN,
+                        // the script already contained the exit command, etc.                        
+                    } else {
+                        throw e;
+                    }
+                }
 
                 // wait for our process to finish, while we gobble away in the
                 // background
@@ -1593,13 +1609,14 @@ public class Shell {
                 try {
                     STDIN.close();
                 } catch (IOException e) {
+                    // STDIN going missing is no reason to abort 
                 }
                 STDOUT.join();
                 STDERR.join();
                 stopWatchdog();
                 process.destroy();
             } catch (IOException e) {
-                // shell probably not found
+                // various unforseen IO errors may still occur
             } catch (InterruptedException e) {
                 // this should really be re-thrown
             }

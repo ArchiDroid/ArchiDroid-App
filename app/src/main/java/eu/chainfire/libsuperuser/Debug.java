@@ -6,7 +6,7 @@
  *  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
  * /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
  *
- * Copyright 2014 Łukasz "JustArchi" Domeradzki
+ * Copyright 2015 Łukasz "JustArchi" Domeradzki
  * Contact: JustArchi@JustArchi.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ public class Debug {
      * builds and disabled for exported APKs - see
      * BuildConfig.DEBUG</p>
      * 
-     * @param enable Enable debug mode ?
+     * @param enabled Enable debug mode ?
      */	
     public static void setDebug(boolean enable) { 
         debug = enable; 
@@ -141,7 +141,7 @@ public class Debug {
      * occur.</p>
      * 
      * @param type LOG_* constants
-     * @param enable Enable or disable
+     * @param enabled Enable or disable
      */
     public static void setLogTypeEnabled(int type, boolean enable) { 
         if (enable) {
@@ -210,7 +210,7 @@ public class Debug {
      * <p>Enables or disables the library crashing when su is called 
      * from the main thread.</p>
      * 
-     * @param enable Enable or disable
+     * @param enabled Enable or disable
      */
     public static void setSanityChecksEnabled(boolean enable) {
         sanityChecks = enable;
