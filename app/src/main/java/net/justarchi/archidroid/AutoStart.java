@@ -39,19 +39,19 @@ public final class AutoStart extends BroadcastReceiver {
 		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
 			new ArchiDroidUpdateAlarm().setAlarm(context);
 
-            final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm != null) {
-                final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-                if (networkInfo != null) {
-                    final Network network[] = cm.getAllNetworks();
-                    for (int i = 0; i < network.length; i++) {
-                        if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString())) {
-                            ArchiDroidUtilities.sendEvent("CONNECTIVITY_CHANGE " + network[i].toString());
-                            break;
-                        }
-                    }
-                }
-            }
+			final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			if (cm != null) {
+				final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+				if (networkInfo != null) {
+					final Network network[] = cm.getAllNetworks();
+					for (int i = 0; i < network.length; i++) {
+						if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString())) {
+							ArchiDroidUtilities.sendEvent("CONNECTIVITY_CHANGE " + network[i].toString());
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 }

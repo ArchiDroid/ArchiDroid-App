@@ -178,6 +178,14 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		textCurrentDevice.setText(getString(R.string.textDevice) + " " + ArchiDroidUtilities.getArchiDroidDevice());
 	}
 
+	private final void startArchiDroidUpdateForegroundService(final Context context) {
+		context.startService(new Intent(context, ArchiDroidUpdateForegroundService.class));
+	}
+
+	private final void stopArchiDroidUpdateForegroundService(final Context context) {
+		context.stopService(new Intent(context, ArchiDroidUpdateForegroundService.class));
+	}
+
 	public final class CustomOnClickListener implements View.OnClickListener {
 
 		@Override
@@ -240,14 +248,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 		public final void onNothingSelected(final AdapterView<?> parent) {
 
 		}
-	}
-
-	private final void startArchiDroidUpdateForegroundService(final Context context) {
-		context.startService(new Intent(context, ArchiDroidUpdateForegroundService.class));
-	}
-
-	private final void stopArchiDroidUpdateForegroundService(final Context context) {
-		context.stopService(new Intent(context, ArchiDroidUpdateForegroundService.class));
 	}
 
 	private final class loadBranches extends AsyncTask<String, Void, ArrayList<String>> {

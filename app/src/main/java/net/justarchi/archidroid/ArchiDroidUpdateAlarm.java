@@ -51,7 +51,7 @@ public final class ArchiDroidUpdateAlarm extends WakefulBroadcastReceiver {
 	}
 
 	protected final void cancelAlarm(final Context context) {
-		if (alarmMgr!= null) {
+		if (alarmMgr != null) {
 			alarmMgr.cancel(alarmIntent);
 		}
 	}

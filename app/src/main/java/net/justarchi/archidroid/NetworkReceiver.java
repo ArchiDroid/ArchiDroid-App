@@ -35,7 +35,7 @@ import android.net.NetworkInfo;
 public final class NetworkReceiver extends BroadcastReceiver {
 
 	private static boolean isConnected = false;
-    private static String lastNetworkID = "";
+	private static String lastNetworkID = "";
 
 	protected final static boolean isConnectedNow(final Context context) {
 		refreshConnection(context);
@@ -52,20 +52,20 @@ public final class NetworkReceiver extends BroadcastReceiver {
 	public final void onReceive(final Context context, final Intent intent) {
 		refreshConnection(context);
 
-        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-            if (networkInfo != null) {
-                final Network network[] = cm.getAllNetworks();
-                for (int i = 0; i < network.length; i++) {
-                    if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString()) && !network[i].toString().equals(lastNetworkID)) {
-                        lastNetworkID = network[i].toString();
-                        ArchiDroidUtilities.sendEvent("CONNECTIVITY_CHANGE " + lastNetworkID);
-                        break;
-                    }
-                }
-            }
-        }
+		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (cm != null) {
+			final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+			if (networkInfo != null) {
+				final Network network[] = cm.getAllNetworks();
+				for (int i = 0; i < network.length; i++) {
+					if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString()) && !network[i].toString().equals(lastNetworkID)) {
+						lastNetworkID = network[i].toString();
+						ArchiDroidUtilities.sendEvent("CONNECTIVITY_CHANGE " + lastNetworkID);
+						break;
+					}
+				}
+			}
+		}
 	}
 }
 

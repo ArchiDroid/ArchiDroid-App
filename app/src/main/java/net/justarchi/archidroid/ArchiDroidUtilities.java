@@ -47,14 +47,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.RandomAccessFile;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -80,10 +75,10 @@ public final class ArchiDroidUtilities {
 	private static final String githubWiki = "https://github.com/" + githubRepo + "/wiki/Application";
 	private static final String linkDonation = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WYXLLCQ9EA28L&item_name=ArchiDroid&item_number=ArchiDroidApplication";
 	private static final String ArchiDroidDataDir = "/data/media/0/ArchiDroid";
-    private static final String ArchiDroidSystemDir = "/system/archidroid";
-    private static final String ArchiDroidTmpfsDir = ArchiDroidSystemDir + "/tmpfs";
-    private static final String ArchiDroidEventsPipe = ArchiDroidTmpfsDir + "/EVENTS";
 	private static String ArchiDroidLinux = ArchiDroidDataDir + "/debian";
+	private static final String ArchiDroidSystemDir = "/system/archidroid";
+	private static final String ArchiDroidTmpfsDir = ArchiDroidSystemDir + "/tmpfs";
+	private static final String ArchiDroidEventsPipe = ArchiDroidTmpfsDir + "/EVENTS";
 	private static boolean isActive = false;
 	private static boolean isArchiDroid = false;
 	private static boolean isRooted = false;
@@ -157,9 +152,9 @@ public final class ArchiDroidUtilities {
 		return ArchiDroidLinux;
 	}
 
-    protected static final String getArchiDroidTmpfsDir() {
-        return ArchiDroidTmpfsDir;
-    }
+	protected static final String getArchiDroidTmpfsDir() {
+		return ArchiDroidTmpfsDir;
+	}
 
 	protected static final void refreshArchiDroidLinux() {
 		if (rootIsLinuxInstalled()) {
@@ -320,7 +315,7 @@ public final class ArchiDroidUtilities {
 	}
 
 	protected static final List<String> rootExecuteWait(final String command) {
-        //log("rootExecuteWait: " + command);
+		//log("rootExecuteWait: " + command);
 		return rootExecuteWait(new String[]{command});
 	}
 
@@ -444,33 +439,33 @@ public final class ArchiDroidUtilities {
 		return sb.toString();
 	}
 
-    protected static final void writePipe(final File file, final String message) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(file));
-            writer.write(message);
-            writer.newLine();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	protected static final void writePipe(final File file, final String message) {
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(message);
+			writer.newLine();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
-    protected static final void sendEvent(final String event) {
-        final File EventsPipe = new File(ArchiDroidEventsPipe);
-        if (EventsPipe.exists()) {
-            writePipe(EventsPipe, event);
-        } else {
-            error("sendEvent: Tried to send " + event + ", but events pipe " + ArchiDroidEventsPipe + " doesn't exist!");
-        }
-    }
+	protected static final void sendEvent(final String event) {
+		final File EventsPipe = new File(ArchiDroidEventsPipe);
+		if (EventsPipe.exists()) {
+			writePipe(EventsPipe, event);
+		} else {
+			error("sendEvent: Tried to send " + event + ", but events pipe " + ArchiDroidEventsPipe + " doesn't exist!");
+		}
+	}
 
 	protected static final String readFile(final String path) {
 		return readFile(new File(path));
@@ -515,12 +510,12 @@ public final class ArchiDroidUtilities {
 	}
 
 	/**
-	* Compares two version-like strings, e.g. 3.0a 3.1.1b
-	*
-	* @param bigger The version which should be bigger
-	* @param smaller The version which should be smaller
-	* @return 1 if bigger > smaller, -1 if smaller > bigger, 0 otherwise (equal)
-	*/
+	 * Compares two version-like strings, e.g. 3.0a 3.1.1b
+	 *
+	 * @param bigger  The version which should be bigger
+	 * @param smaller The version which should be smaller
+	 * @return 1 if bigger > smaller, -1 if smaller > bigger, 0 otherwise (equal)
+	 */
 	protected static final int compareVersions(final String bigger, final String smaller) {
 		int biggerLength = bigger.length();
 		int smallerLength = smaller.length();
@@ -555,7 +550,7 @@ public final class ArchiDroidUtilities {
 	/**
 	 * Compares two versionType-like strings, e.g. STABLE and EXPERIMENTAL
 	 *
-	 * @param remote The version which is available on the remote server
+	 * @param remote  The version which is available on the remote server
 	 * @param current The version which we have right now
 	 * @return 1 if remote > current (stable vs. exp), -1 if current > remote (exp vs. stable), 0 otherwise (equal)
 	 */
