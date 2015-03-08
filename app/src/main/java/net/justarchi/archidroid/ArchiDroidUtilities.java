@@ -79,6 +79,7 @@ public final class ArchiDroidUtilities {
 	private static final String ArchiDroidSystemDir = "/system/archidroid";
 	private static final String ArchiDroidTmpfsDir = ArchiDroidSystemDir + "/tmpfs";
 	private static final String ArchiDroidEventsPipe = ArchiDroidTmpfsDir + "/EVENTS";
+	private static final String ArchiDroidEventsProcess = "ARCHIDROID_EVENT_LISTENER";
 	private static boolean isActive = false;
 	private static boolean isArchiDroid = false;
 	private static boolean isRooted = false;
@@ -460,10 +461,12 @@ public final class ArchiDroidUtilities {
 
 	protected static final void sendEvent(final String event) {
 		final File EventsPipe = new File(ArchiDroidEventsPipe);
-		if (EventsPipe.exists()) {
-			writePipe(EventsPipe, event);
-		} else {
+		if (!EventsPipe.exists()) {
 			error("sendEvent: Tried to send " + event + ", but events pipe " + ArchiDroidEventsPipe + " doesn't exist!");
+		} else if (!processIsRunning(ArchiDroidEventsProcess)) {
+			error("sendEvent: Tried to send " + event + ", but ArchiDroidEventsProcess " + ArchiDroidEventsProcess + " is dead!");
+		} else {
+			writePipe(EventsPipe, event);
 		}
 	}
 
