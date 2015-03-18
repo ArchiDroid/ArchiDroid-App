@@ -60,7 +60,16 @@ public final class NetworkReceiver extends BroadcastReceiver {
 				for (int i = 0; i < network.length; i++) {
 					if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString()) && !network[i].toString().equals(lastNetworkID)) {
 						lastNetworkID = network[i].toString();
-						ArchiDroidUtilities.sendEvent("CONNECTIVITY_CHANGE " + lastNetworkID);
+						final StringBuilder sb = new StringBuilder("CONNECTIVITY_CHANGE " + lastNetworkID);
+						for (int j = 1; j < 5; j++) { // Max of 4 DNSes
+							final String address = ArchiDroidUtilities.getProperty("net.dns" + j);
+							if (address != null && !address.isEmpty()) {
+								sb.append(" " + address);
+							} else {
+								break;
+							}
+						}
+						ArchiDroidUtilities.sendEvent(sb.toString());
 						break;
 					}
 				}

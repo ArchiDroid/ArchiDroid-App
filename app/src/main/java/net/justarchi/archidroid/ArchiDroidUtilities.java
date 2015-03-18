@@ -555,7 +555,7 @@ public final class ArchiDroidUtilities {
 	 *
 	 * @param remote  The version which is available on the remote server
 	 * @param current The version which we have right now
-	 * @return 1 if remote > current (stable vs. exp), -1 if current > remote (exp vs. stable), 0 otherwise (equal)
+	 * @return 1 if remote > current (stable vs. exp) -1 if current > remote (exp vs. stable), 0 otherwise (equal)
 	 */
 	protected static final int compareVersionTypes(final String remote, final String current) {
 		if (current.equalsIgnoreCase("STABLE")) {
@@ -564,6 +564,7 @@ public final class ArchiDroidUtilities {
 			} else if (remote.equalsIgnoreCase("STABLE")) {
 				return 0;
 			} else { // Should never happen, unknown version type?
+				error("compareVersionTypes(): Got unknown remote version type: " + remote);
 				return -1;
 			}
 		} else if (current.equalsIgnoreCase("EXPERIMENTAL")) {
@@ -572,9 +573,11 @@ public final class ArchiDroidUtilities {
 			} else if (remote.equalsIgnoreCase("EXPERIMENTAL")) {
 				return 0;
 			} else { // Should never happen, unknown version type?
+				error("compareVersionTypes(): Got unknown remote version type: " + remote);
 				return -1;
 			}
 		} else { // Should never happen, unknown version type?
+			error("compareVersionTypes(): Got unknown current version type: " + current);
 			return -1;
 		}
 	}
@@ -752,7 +755,6 @@ public final class ArchiDroidUtilities {
 				deleteRecursive(child);
 			}
 		}
-
 		return fileOrDirectory.delete();
 	}
 }
