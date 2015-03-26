@@ -835,7 +835,6 @@ public final class ArchiDroidFragmentUpdate extends Fragment {
 			final String targetDir = ArchiDroidUtilities.getArchiDroidInternalDir() + "/GitHub/" + ArchiDroidGithubBranch;
 			final String commandLinux = "ARCHIDROID_LINUX " + ArchiDroidUtilities.getArchiDroidLinux() + " --command ";
 			final String commandZip = commandLinux + "\"cd " + targetDir + " && 7za a -bd -y -tzip -mx1 -xr\\!.git -xr\\!__build " + outputFile + " . >/dev/null 2>&1\"";
-			ArchiDroidUtilities.log(commandZip);
 
 			int errorCode = 1;
 

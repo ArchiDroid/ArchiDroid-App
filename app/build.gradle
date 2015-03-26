@@ -27,13 +27,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '22.0.0'
+    buildToolsVersion '22.0.1'
     defaultConfig {
         applicationId "net.justarchi.archidroid"
         minSdkVersion 21
         targetSdkVersion 22
-        versionCode 8
-        versionName '1.3.3'
+        versionCode 9
+        versionName '1.3.4'
     }
     buildTypes {
         release {

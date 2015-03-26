@@ -63,35 +63,38 @@ import eu.chainfire.libsuperuser.Shell;
 
 public final class ArchiDroidUtilities {
 
-	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
-
-	private static final String internalSdCard = "/storage/sdcard0";
-	private static final String ArchiDroidInternalDir = internalSdCard + "/ArchiDroid";
-	private static final String externalSdCard = "/storage/sdcard1";
-	private static final String ArchiDroidExternalDir = externalSdCard + "/ArchiDroid";
-	private static final boolean archiLogEnabled = true;
-	private static final String githubRepo = "ArchiDroid/ArchiDroid";
-	private static final String githubBraches = "https://api.github.com/repos/" + githubRepo + "/branches";
-	private static final String githubWiki = "https://github.com/" + githubRepo + "/wiki/Application";
-	private static final String linkDonation = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WYXLLCQ9EA28L&item_name=ArchiDroid&item_number=ArchiDroidApplication";
-	private static final String ArchiDroidDataDir = "/data/media/0/ArchiDroid";
-	private static String ArchiDroidLinux = ArchiDroidDataDir + "/debian";
-	private static final String ArchiDroidSystemDir = "/system/archidroid";
-	private static final String ArchiDroidTmpfsDir = ArchiDroidSystemDir + "/tmpfs";
-	private static final String ArchiDroidEventsPipe = ArchiDroidTmpfsDir + "/EVENTS";
-	private static final String ArchiDroidEventsProcess = "ARCHIDROID_EVENT_LISTENER";
-	private static boolean isActive = false;
 	private static boolean isArchiDroid = false;
 	private static boolean isRooted = false;
-	// These may change in future
-	private static String ArchiDroidDir = Environment.getExternalStorageDirectory() + "/ArchiDroid";
-	private static String ArchiDroidTempDir = ArchiDroidDir + "/tmp";
-	private static String updateTargetTempFile = ArchiDroidTempDir + "/ArchiDroid-GitHub.zip";
-	private static String updateTargetTempRepackedFile = ArchiDroidTempDir + "/ArchiDroid.zip";
-	private static String updateTargetFinalFile = ArchiDroidDir + "/ArchiDroid.zip";
 
 	private static boolean ArchiDroidLinuxInstalled = false;
 	private static boolean ArchiDroidLinuxMounted = false;
+
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+	private static final String githubRepo = "ArchiDroid/ArchiDroid";
+	private static final String githubBraches = "https://api.github.com/repos/" + githubRepo + "/branches";
+	private static final String githubWiki = "https://github.com/" + githubRepo + "/wiki/Application";
+
+	private static final String linkDonation = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WYXLLCQ9EA28L&item_name=ArchiDroid&item_number=ArchiDroidApplication";
+
+	private static final String internalSdCard = "/storage/sdcard0";
+	private static final String ArchiDroidInternalDir = internalSdCard + "/ArchiDroid";
+
+	// Data dirs can only be accessed through root
+	private static final String ArchiDroidDataDir = "/data/media/0/ArchiDroid";
+	private static final String ArchiDroidLinux = ArchiDroidDataDir + "/debian";
+
+	private static final String ArchiDroidSystemDir = "/system/archidroid";
+	private static final String ArchiDroidTmpfsDir = ArchiDroidSystemDir + "/tmpfs";
+
+	// These may change in future
+	private static final String ArchiDroidDir = Environment.getExternalStorageDirectory() + "/ArchiDroid";
+	private static final String ArchiDroidEventsDir = ArchiDroidDir + "/System/Events";
+
+	private static final String ArchiDroidTempDir = ArchiDroidDir + "/tmp";
+	private static final String updateTargetTempFile = ArchiDroidTempDir + "/ArchiDroid-GitHub.zip";
+	private static final String updateTargetTempRepackedFile = ArchiDroidTempDir + "/ArchiDroid.zip";
+	private static final String updateTargetFinalFile = ArchiDroidDir + "/ArchiDroid.zip";
 
 	private static String roArchiDroid = null;
 	private static String roArchiDroidDevice = null;
@@ -254,7 +257,6 @@ public final class ArchiDroidUtilities {
 					missingFields--;
 				}
 			}
-			log("VersionCheck: " + roArchiDroidVersionRemote + " " + roArchiDroidVersion + " | " + roBuildDateUTCRemote + " " + roBuildDateUTC);
 			if (compareVersions(roArchiDroidVersionRemote, roArchiDroidVersion) == 1 || compareVersions(roBuildDateUTCRemote, roBuildDateUTC) == 1) {
 				return true;
 			} else {
@@ -440,33 +442,60 @@ public final class ArchiDroidUtilities {
 		return sb.toString();
 	}
 
-	protected static final void writePipe(final File file, final String message) {
-		BufferedWriter writer = null;
+	protected static final boolean writeFile(final File file, final String content) {
+		BufferedWriter bufferedWriter = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(file));
-			writer.write(message);
-			writer.newLine();
-		} catch (Exception e) {
+			bufferedWriter = new BufferedWriter(new FileWriter(file));
+			bufferedWriter.write(content);
+			bufferedWriter.newLine();
+		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		} finally {
-			if (writer != null) {
+			if (bufferedWriter != null) {
 				try {
-					writer.close();
+					bufferedWriter.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+					return false;
 				}
 			}
 		}
+		return true;
 	}
 
-	protected static final void sendEvent(final String event) {
-		final File EventsPipe = new File(ArchiDroidEventsPipe);
-		if (!EventsPipe.exists()) {
-			error("sendEvent: Tried to send " + event + ", but events pipe " + ArchiDroidEventsPipe + " doesn't exist!");
-		} else if (!processIsRunning(ArchiDroidEventsProcess)) {
-			error("sendEvent: Tried to send " + event + ", but ArchiDroidEventsProcess " + ArchiDroidEventsProcess + " is dead!");
+	protected static final File writeTempFile(final File directory, final String extension, final String content) {
+		if (directory.isDirectory()) {
+			File tempFile = null;
+			try {
+				tempFile = File.createTempFile("ArchiDroid", extension, directory);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+			writeFile(tempFile, content);
+			return tempFile;
 		} else {
-			writePipe(EventsPipe, event);
+			error("writeTempFile(): Directory " + directory + " doesn't exist!");
+			return null;
+		}
+	}
+
+	private static File lastEventFile = null;
+	protected static final void sendEvent(final String event) {
+		if (new File(ArchiDroidEventsDir).exists()) {
+			if (lastEventFile != null && lastEventFile.exists()) {
+				error("sendEvent(): Tried to send event, but it looks like nothing is listening for them!");
+				return;
+			}
+			final File eventFile = writeTempFile(new File(ArchiDroidEventsDir), ".EVENT", event);
+			if (eventFile != null) {
+				lastEventFile = eventFile;
+			} else {
+				error("sendEvent(): writeTempFile() returned null file!");
+			}
+		} else {
+			error("sendEvent(): ArchiDroidEventsDir " + ArchiDroidEventsDir + " doesn't exist!");
 		}
 	}
 
@@ -504,12 +533,6 @@ public final class ArchiDroidUtilities {
 
 	protected static final void error(final String string) {
 		Log.e("ArchiError: ", string);
-	}
-
-	protected static final void log(final String string) {
-		if (archiLogEnabled) {
-			Log.v("ArchiLog: ", string);
-		}
 	}
 
 	/**
@@ -610,18 +633,6 @@ public final class ArchiDroidUtilities {
 
 	protected static final boolean isArchiDroid() {
 		return isArchiDroid;
-	}
-
-	protected static final boolean isActive() {
-		return isActive;
-	}
-
-	protected static final void onResume() {
-		isActive = true;
-	}
-
-	protected static final void onPause() {
-		isActive = false;
 	}
 
 	protected static final String getGithubBranches() {

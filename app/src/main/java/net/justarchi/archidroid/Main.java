@@ -65,13 +65,13 @@ public final class Main extends Activity implements ActionBar.TabListener {
 	@Override
 	protected final void onPause() {
 		super.onPause();
-		ArchiDroidUtilities.onPause();
+		//ArchiDroidUtilities.onPause();
 	}
 
 	@Override
 	protected final void onResume() {
 		super.onResume();
-		ArchiDroidUtilities.onResume();
+		//ArchiDroidUtilities.onResume();
 	}
 
 	@Override
