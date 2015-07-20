@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ ========================================================================
   ~     _             _     _ ____            _     _
@@ -8,14 +7,14 @@
   ~  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
   ~ /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
   ~
-  ~ Copyright 2015 Łukasz "JustArchi" Domeradzki
+  ~ Copyright 2014-2015 Łukasz "JustArchi" Domeradzki
   ~ Contact: JustArchi@JustArchi.net
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~     http://www.apache.org/licenses/LICENSE=2.0
+  ~     http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,10 +24,10 @@
   ~ ========================================================================
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+<LinearLayout android:id="@+id/layoutBackend"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:id="@+id/layoutBackend">
+              android:orientation="vertical">
 
 </LinearLayout>

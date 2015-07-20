@@ -1,26 +1,17 @@
 /*
- * ========================================================================
- *     _             _     _ ____            _     _
- *    / \   _ __ ___| |__ (_)  _ \ _ __ ___ (_) __| |
- *   / _ \ | '__/ __| '_ \| | | | | '__/ _ \| |/ _` |
- *  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
- * /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
- *
- * Copyright 2015 Łukasz "JustArchi" Domeradzki
- * Contact: JustArchi@JustArchi.net
+ * Copyright (C) 2012-2014 Jorrit "Chainfire" Jongma
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE=2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ========================================================================
  */
 
 package eu.chainfire.libsuperuser;
@@ -46,7 +37,7 @@ public class Debug {
      * builds and disabled for exported APKs - see
      * BuildConfig.DEBUG</p>
      * 
-     * @param enabled Enable debug mode ?
+     * @param enable Enable debug mode ?
      */	
     public static void setDebug(boolean enable) { 
         debug = enable; 
@@ -64,7 +55,7 @@ public class Debug {
     // ----- LOGGING -----
 
     public interface OnLogListener {
-        public void onLog(int type, String typeIndicator, String message);
+        void onLog(int type, String typeIndicator, String message);
     }
 
     public static final String TAG = "libsuperuser";
@@ -141,7 +132,7 @@ public class Debug {
      * occur.</p>
      * 
      * @param type LOG_* constants
-     * @param enabled Enable or disable
+     * @param enable Enable or disable
      */
     public static void setLogTypeEnabled(int type, boolean enable) { 
         if (enable) {
@@ -210,7 +201,7 @@ public class Debug {
      * <p>Enables or disables the library crashing when su is called 
      * from the main thread.</p>
      * 
-     * @param enabled Enable or disable
+     * @param enable Enable or disable
      */
     public static void setSanityChecksEnabled(boolean enable) {
         sanityChecks = enable;

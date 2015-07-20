@@ -6,14 +6,14 @@
  *  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
  * /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
  *
- * Copyright 2015 Łukasz "JustArchi" Domeradzki
+ * Copyright 2014-2015 Łukasz "JustArchi" Domeradzki
  * Contact: JustArchi@JustArchi.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE=2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,8 +44,7 @@ import android.view.ViewGroup;
 
 import java.util.Locale;
 
-
-public final class Main extends Activity implements ActionBar.TabListener {
+public class Main extends Activity implements ActionBar.TabListener {
 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -61,18 +60,6 @@ public final class Main extends Activity implements ActionBar.TabListener {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-
-	@Override
-	protected final void onPause() {
-		super.onPause();
-		//ArchiDroidUtilities.onPause();
-	}
-
-	@Override
-	protected final void onResume() {
-		super.onResume();
-		//ArchiDroidUtilities.onResume();
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -161,39 +148,6 @@ public final class Main extends Activity implements ActionBar.TabListener {
 	}
 
 	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		public PlaceholderFragment() {
-		}
-
-		/**
-		 * Returns a new instance of this fragment for the given section
-		 * number.
-		 */
-		public static PlaceholderFragment newInstance(int sectionNumber) {
-			PlaceholderFragment fragment = new PlaceholderFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-								 Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-			return rootView;
-		}
-	}
-
-	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
 	 */
@@ -228,7 +182,7 @@ public final class Main extends Activity implements ActionBar.TabListener {
 
 		@Override
 		public int getCount() {
-			// Show  total pages.
+			// Show total pages.
 			return 6;
 		}
 
@@ -250,6 +204,39 @@ public final class Main extends Activity implements ActionBar.TabListener {
 					return getString(R.string.titleLinux);
 			}
 			return null;
+		}
+	}
+
+	/**
+	 * A placeholder fragment containing a simple view.
+	 */
+	public static class PlaceholderFragment extends Fragment {
+		/**
+		 * The fragment argument representing the section number for this
+		 * fragment.
+		 */
+		private static final String ARG_SECTION_NUMBER = "section_number";
+
+		/**
+		 * Returns a new instance of this fragment for the given section
+		 * number.
+		 */
+		public static PlaceholderFragment newInstance(int sectionNumber) {
+			PlaceholderFragment fragment = new PlaceholderFragment();
+			Bundle args = new Bundle();
+			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+			fragment.setArguments(args);
+			return fragment;
+		}
+
+		public PlaceholderFragment() {
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+		                         Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+			return rootView;
 		}
 	}
 

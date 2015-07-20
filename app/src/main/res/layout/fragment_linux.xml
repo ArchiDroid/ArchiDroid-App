@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ ========================================================================
   ~     _             _     _ ____            _     _
@@ -6,14 +7,14 @@
   ~  / ___ \| | | (__| | | | | |_| | | | (_) | | (_| |
   ~ /_/   \_\_|  \___|_| |_|_|____/|_|  \___/|_|\__,_|
   ~
-  ~ Copyright 2015 Łukasz "JustArchi" Domeradzki
+  ~ Copyright 2014-2015 Łukasz "JustArchi" Domeradzki
   ~ Contact: JustArchi@JustArchi.net
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~     http://www.apache.org/licenses/LICENSE=2.0
+  ~     http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,87 +25,87 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".Main$PlaceholderFragment">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context=".Main$PlaceholderFragment">
 
 	<Button
+		android:id="@+id/buttonLaunchShell"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/buttonLaunchShell"
-		android:id="@+id/buttonLaunchShell"
-		android:layout_below="@+id/checkBoxInstalled"
+		android:layout_alignParentEnd="true"
 		android:layout_alignParentStart="true"
+		android:layout_below="@+id/checkBoxInstalled"
 		android:layout_marginTop="25dp"
-		android:layout_alignParentEnd="true"/>
+		android:text="@string/buttonLaunchShell"/>
 
 	<Space
+		android:id="@+id/space"
 		android:layout_width="20px"
 		android:layout_height="20px"
-		android:id="@+id/space"
+		android:layout_alignParentBottom="true"
 		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true"
-		android:layout_alignParentBottom="true"/>
+		android:layout_centerHorizontal="true"/>
 
 	<Button
+		android:id="@+id/buttonInstall"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/buttonInstall"
-		android:id="@+id/buttonInstall"
 		android:layout_alignBottom="@+id/buttonUninstall"
 		android:layout_alignParentStart="true"
-		android:layout_toStartOf="@+id/space"/>
+		android:layout_toStartOf="@+id/space"
+		android:text="@string/buttonInstall"/>
 
 	<Button
+		android:id="@+id/buttonUninstall"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/buttonUninstall"
-		android:id="@+id/buttonUninstall"
+		android:layout_alignParentEnd="true"
 		android:layout_alignParentTop="true"
 		android:layout_alignStart="@+id/space"
-		android:layout_alignParentEnd="true"/>
+		android:text="@string/buttonUninstall"/>
 
 	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/buttonMount"
 		android:id="@+id/buttonMount"
-		android:layout_toStartOf="@+id/space"
-		android:layout_below="@+id/buttonInstall"
-		android:layout_alignParentStart="true"/>
-
-	<Button
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/buttonUnmount"
-		android:id="@+id/buttonUnmount"
+		android:layout_alignParentStart="true"
+		android:layout_below="@+id/buttonInstall"
 		android:layout_toStartOf="@+id/space"
+		android:text="@string/buttonMount"/>
+
+	<Button
+		android:id="@+id/buttonUnmount"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentEnd="true"
 		android:layout_below="@+id/buttonUninstall"
 		android:layout_toEndOf="@+id/buttonMount"
-		android:layout_alignParentEnd="true"/>
+		android:layout_toStartOf="@+id/space"
+		android:text="@string/buttonUnmount"/>
 
 	<CheckBox
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/checkBoxInstalled"
 		android:id="@+id/checkBoxInstalled"
-		android:layout_marginTop="24dp"
-		android:enabled="false"
-		android:layout_below="@+id/buttonMount"
-		android:layout_toStartOf="@+id/space"/>
-
-	<CheckBox
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/checkBoxMounted"
-		android:id="@+id/checkBoxMounted"
+		android:layout_below="@+id/buttonMount"
+		android:layout_marginTop="24dp"
+		android:layout_toStartOf="@+id/space"
 		android:enabled="false"
+		android:text="@string/checkBoxInstalled"/>
+
+	<CheckBox
+		android:id="@+id/checkBoxMounted"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_alignTop="@+id/checkBoxInstalled"
-		android:layout_toEndOf="@+id/space"/>
+		android:layout_toEndOf="@+id/space"
+		android:enabled="false"
+		android:text="@string/checkBoxMounted"/>
 
 </RelativeLayout>
