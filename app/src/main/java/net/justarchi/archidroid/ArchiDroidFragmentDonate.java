@@ -34,7 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class ArchiDroidFragmentDonate extends Fragment {
+public final class ArchiDroidFragmentDonate extends Fragment {
 
 	private ImageView imageViewDonate;
 

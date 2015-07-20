@@ -29,8 +29,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 
 public final class AutoStart extends BroadcastReceiver {
 
@@ -40,18 +38,7 @@ public final class AutoStart extends BroadcastReceiver {
 			new ArchiDroidUpdateAlarm().setAlarm(context);
 
 			final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			if (cm != null) {
-				final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-				if (networkInfo != null) {
-					final Network network[] = cm.getAllNetworks();
-					for (int i = 0; i < network.length; i++) {
-						if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString())) {
-							ArchiDroidUtilities.sendEvent("CONNECTIVITY_CHANGE " + network[i].toString());
-							break;
-						}
-					}
-				}
-			}
+			NetworkReceiver.networkHasChanged(cm);
 		}
 	}
 }

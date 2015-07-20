@@ -32,6 +32,8 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 
+import java.net.InetAddress;
+
 public final class NetworkReceiver extends BroadcastReceiver {
 
 	private static boolean isConnected = false;
@@ -41,32 +43,38 @@ public final class NetworkReceiver extends BroadcastReceiver {
 		return isConnected;
 	}
 
+	protected final static void refreshConnection(final ConnectivityManager cm) {
+		if (cm != null) {
+			final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+			isConnected = activeNetwork != null && activeNetwork.isConnected();
+		}
+	}
+
 	protected final static void refreshConnection(final Context context) {
 		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-		isConnected = activeNetwork != null && activeNetwork.isConnected();
+		if (cm != null) {
+			refreshConnection(cm);
+		}
 	}
 
 	@Override
 	public final void onReceive(final Context context, final Intent intent) {
-		refreshConnection(context);
-
 		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		refreshConnection(cm);
+		networkHasChanged(cm);
+	}
+
+	protected static final void networkHasChanged(final ConnectivityManager cm) {
 		if (cm != null) {
-			final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-			if (networkInfo != null) {
-				final String networkInfoString = networkInfo.toString();
+			final NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+			if (activeNetworkInfo != null) {
+				final String activeNetworkInfoString = activeNetworkInfo.toString();
 				final Network networks[] = cm.getAllNetworks();
 				for (int i = 0; i < networks.length; i++) {
-					if (networks[i] != null && cm.getNetworkInfo(networks[i]).toString().equals(networkInfoString)) {
+					if (networks[i] != null && cm.getNetworkInfo(networks[i]).toString().equals(activeNetworkInfoString)) {
 						final StringBuilder sb = new StringBuilder("CONNECTIVITY_CHANGE " + networks[i].toString());
-						for (int j = 1; j < 5; j++) { // Max of 4 DNSes
-							final String address = ArchiDroidUtilities.getProperty("net.dns" + j);
-							if (address != null && !address.isEmpty()) {
-								sb.append(" " + address);
-							} else {
-								break;
-							}
+						for (InetAddress dns : cm.getLinkProperties(networks[i]).getDnsServers()) {
+							sb.append(" " + dns.getHostAddress());
 						}
 						ArchiDroidUtilities.sendEvent(sb.toString());
 						break;
