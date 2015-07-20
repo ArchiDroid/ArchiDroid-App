@@ -35,7 +35,6 @@ import android.net.NetworkInfo;
 public final class NetworkReceiver extends BroadcastReceiver {
 
 	private static boolean isConnected = false;
-	private static String lastNetworkID = "";
 
 	protected final static boolean isConnectedNow(final Context context) {
 		refreshConnection(context);
@@ -56,11 +55,11 @@ public final class NetworkReceiver extends BroadcastReceiver {
 		if (cm != null) {
 			final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 			if (networkInfo != null) {
-				final Network network[] = cm.getAllNetworks();
-				for (int i = 0; i < network.length; i++) {
-					if (network[i] != null && cm.getNetworkInfo(network[i]).toString().equals(networkInfo.toString()) && !network[i].toString().equals(lastNetworkID)) {
-						lastNetworkID = network[i].toString();
-						final StringBuilder sb = new StringBuilder("CONNECTIVITY_CHANGE " + lastNetworkID);
+				final String networkInfoString = networkInfo.toString();
+				final Network networks[] = cm.getAllNetworks();
+				for (int i = 0; i < networks.length; i++) {
+					if (networks[i] != null && cm.getNetworkInfo(networks[i]).toString().equals(networkInfoString)) {
+						final StringBuilder sb = new StringBuilder("CONNECTIVITY_CHANGE " + networks[i].toString());
 						for (int j = 1; j < 5; j++) { // Max of 4 DNSes
 							final String address = ArchiDroidUtilities.getProperty("net.dns" + j);
 							if (address != null && !address.isEmpty()) {
